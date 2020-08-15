@@ -5,45 +5,22 @@ import reducer from './reducer';
 
 const getInitialState = () => ({
     // urlTextInput: 'https://pokeapi.co/api/v2/pokemon/ditto',
-    urlTextInput: 'https://dog.ceo/api/breeds/list/all',
-    // urlTextInput: '',
-    treeData: [
-        {
-            name: "vegetables",
-            children: [{name: "cucumber"}, {
-                name: "lettuce",
-                name2: "asd",
-                name3: "sdf",
-                children: ["green", "purple", "arabic"]
-            }]
-        },
-        {
-            name: "meat",
-            children: [{name: "cow"}, {name: "chicken"}, {
-                name: "donkey",
-                children: [{name: "male"}, {
-                    name: "female",
-                    children: [{name: "fat"}, {name: "thin", children: [{name: "tall"}, {name: "short"}]}]
-                }]
-            }]
-        },
-        {name: "fish", children: [{name: "tuna"}, {name: "salmon"}, {name: "bass"}]}
-    ],
+    // urlTextInput: 'https://dog.ceo/api/breeds/list/all',
+    urlTextInput: '',
+    treeData: {},
     isPreloader: false
 });
 
 
-function Ul({children}) {
-
+function List({children}) {
     const [menuOpened, setMenuOpened] = useState(true);
     const toggleMenu = (e) => {
         e.stopPropagation();
         setMenuOpened(!menuOpened);
     }
-
     return (
         <>
-            <a onClick={toggleMenu}>{menuOpened ? 'x' : '+'}</a>
+            {children.length > 0 && <button type='button' className='toggle' onClick={toggleMenu}>{menuOpened ? '-' : '+'}</button>}
             <ul style={{display: menuOpened ? 'block' : 'none'}}>
                 {children}
             </ul>
@@ -54,44 +31,44 @@ function Ul({children}) {
 function RecursiveMenu({treeData}) {
 
     let i = 0;
-
-    function recursiveMenuFunc(treeData) {
-        if (treeData) {
-            if (typeof treeData === 'object') {
-                const treeDataArray = Object.values(treeData);
-                return treeDataArray.length > 0 && <li key={++i}><Ul>
-                    {treeDataArray.map(recursiveMenuFunc)}
-                </Ul></li>
+    const recursiveMenuFunc = (node) => {
+        if (node) {
+            if (typeof node === 'object') {
+                const treeDataArray = Object.values(node);
+                return(
+                <li key={++i}>
+                    <List>
+                        {treeDataArray.map(recursiveMenuFunc)}
+                    </List>
+                </li>
+                )
             } else {
-                return <li key={++i}>{treeData}</li>;
+                return <li key={++i}><span>{node}</span></li>;
             }
         } else {
             return null;
         }
-
     }
 
-
-    // console.log(treeData);
-    let returnedData = recursiveMenuFunc(treeData);
-    // console.log(returnedData);
     return (
         <ul>
-            {returnedData}
+            {recursiveMenuFunc(treeData)}
         </ul>
     )
 }
 
-function MenuFetcher({urlText, setTreeData, setPreloader, isPreloader}) {
+function JsonRetriever({urlText, setTreeData, setPreloader, isPreloader}) {
 
     const fetchdata = async (url) => {
+        if (!url) return;
         setPreloader(true);
-        fetch(url)
+        await fetch(url)
             .then(response => response.json())
             .then(data => {
-                setPreloader(false);
                 setTreeData(data)
             });
+        setPreloader(false);
+
     }
 
     return (
@@ -101,7 +78,12 @@ function MenuFetcher({urlText, setTreeData, setPreloader, isPreloader}) {
     )
 }
 
-function Menufier() {
+const DUMMY_URLS = {
+    PETS: 'https://petstore.swagger.io/v2/swagger.json',
+    DOG: 'https://dog.ceo/api/breeds/list/all'
+}
+
+function TreeRenderer() {
 
     const [state, dispatch] = useReducer(reducer, getInitialState());
     const {urlTextInput, isPreloader, treeData} = state;
@@ -109,6 +91,10 @@ function Menufier() {
 
     const setUrlTextInput = (e) => {
         dispatch({type: 'SET_URL_TEXT_INPUT', payload: e.target.value})
+    }
+
+    const setDummyUrlTextInput = (url) => {
+        dispatch({type: 'SET_URL_TEXT_INPUT', payload: url})
     }
 
     const setTreeData = (treeDate) => {
@@ -122,10 +108,20 @@ function Menufier() {
     return (
         <>
             <styled.Header>
-                <input type="text" value={urlTextInput} onChange={setUrlTextInput}/>
+                <styled.TextInput type="text" value={urlTextInput} onChange={setUrlTextInput} placeholder='Please provide a valid api endpoint url.'/>
             </styled.Header>
-            <MenuFetcher urlText={urlTextInput} setTreeData={setTreeData} setPreloader={setPreloader}
-                         isPreloader={isPreloader}/>
+            <styled.DummyUrlsWrap>
+                <styled.Dl>
+                    <styled.Dt>Dummy urls:</styled.Dt>
+                    <styled.Dd>
+                        <button type='button' onClick={() => setDummyUrlTextInput(DUMMY_URLS['PETS'])}>1</button>
+                        <button type='button' onClick={() => setDummyUrlTextInput(DUMMY_URLS['DOG'])}>2</button>
+                    </styled.Dd>
+                </styled.Dl>
+            </styled.DummyUrlsWrap>
+            <styled.ButtonWrap>
+                <JsonRetriever urlText={urlTextInput} setTreeData={setTreeData} setPreloader={setPreloader} isPreloader={isPreloader}/>
+            </styled.ButtonWrap>
             <styled.Main>
                 <RecursiveMenu treeData={treeData}/>
             </styled.Main>
@@ -139,7 +135,7 @@ function Menufier() {
 function App() {
     return (
         <styled.AppContainer>
-            <Menufier/>
+            <TreeRenderer/>
         </styled.AppContainer>
     );
 }
