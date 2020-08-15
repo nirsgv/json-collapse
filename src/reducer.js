@@ -11,6 +11,20 @@ const reducer = (state, action) => {
             }
         }
 
+        case 'SET_TREE_DATA': {
+            return {
+                ...state,
+                treeData: action.payload
+            }
+        }
+
+        case 'SET_PRELOADER': {
+            return {
+                ...state,
+                isPreloader: action.payload
+            }
+        }
+
         default:
             return state;
     }
