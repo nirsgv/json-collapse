@@ -12,8 +12,3 @@ ul {
   text-align: left;
   list-style: none;
 }
-
-li {
-  /*display: flex*/
-  text-decoration: none;
-}

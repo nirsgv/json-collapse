@@ -40,8 +40,8 @@ const DummyUrlsWrap = styled.section`
 `
 const Dl = styled.dl`
     display: flex;
-    width: 200px;
-    justify-content: space-between'
+    width: 250px;
+    justify-content: center;
 `
 const Dt = styled.dt`
     display: inline-block;

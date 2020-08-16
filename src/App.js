@@ -12,7 +12,8 @@ const getInitialState = () => ({
 
 const DUMMY_URLS = {
     PETS: 'https://petstore.swagger.io/v2/swagger.json',
-    DOG: 'https://dog.ceo/api/breeds/list/all'
+    DOG: 'https://dog.ceo/api/breeds/list/all',
+    GLOSSARY: 'https://json-collapse-example-service.free.beeceptor.com/my/api/pathexampler#'
 }
 
 function List({children}) {
@@ -106,8 +107,9 @@ function TreeRenderer() {
                 <styled.Dl>
                     <styled.Dt>Dummy urls:</styled.Dt>
                     <styled.Dd>
-                        <button type='button' onClick={() => setDummyUrlTextInput(DUMMY_URLS['PETS'])}>1</button>
-                        <button type='button' onClick={() => setDummyUrlTextInput(DUMMY_URLS['DOG'])}>2</button>
+                        {Object.keys(DUMMY_URLS).map(((dummyUrl, index) => (
+                            <button type='button' onClick={() => (setDummyUrlTextInput(DUMMY_URLS[dummyUrl]))}>{index}</button>
+                        )))}
                     </styled.Dd>
                 </styled.Dl>
             </styled.DummyUrlsWrap>
