@@ -9,6 +9,10 @@ const getInitialState = () => ({
     isPreloader: false
 });
 
+const DUMMY_URLS = {
+    PETS: 'https://petstore.swagger.io/v2/swagger.json',
+    DOG: 'https://dog.ceo/api/breeds/list/all'
+}
 
 function List({children}) {
     const [menuOpened, setMenuOpened] = useState(true);
@@ -77,32 +81,15 @@ function JsonRetriever({urlText, setTreeData, setPreloader, isPreloader}) {
     )
 }
 
-const DUMMY_URLS = {
-    PETS: 'https://petstore.swagger.io/v2/swagger.json',
-    DOG: 'https://dog.ceo/api/breeds/list/all'
-}
-
 function TreeRenderer() {
 
-    const [state, dispatch] = useReducer(reducer, getInitialState());
-    const {urlTextInput, isPreloader, treeData} = state;
+    const [ state, dispatch ] = useReducer(reducer, getInitialState());
+    const { urlTextInput, isPreloader, treeData } = state;
 
-
-    const setUrlTextInput = (e) => {
-        dispatch({type: 'SET_URL_TEXT_INPUT', payload: e.target.value})
-    }
-
-    const setDummyUrlTextInput = (url) => {
-        dispatch({type: 'SET_URL_TEXT_INPUT', payload: url})
-    }
-
-    const setTreeData = (treeDate) => {
-        dispatch({type: 'SET_TREE_DATA', payload: treeDate})
-    }
-
-    const setPreloader = (bool) => {
-        dispatch({type: 'SET_PRELOADER', payload: bool})
-    }
+    const setUrlTextInput = (e) => dispatch({type: 'SET_URL_TEXT_INPUT', payload: e.target.value});
+    const setDummyUrlTextInput = (url) => dispatch({type: 'SET_URL_TEXT_INPUT', payload: url});
+    const setTreeData = (treeDate) => dispatch({type: 'SET_TREE_DATA', payload: treeDate});
+    const setPreloader = (bool) => dispatch({type: 'SET_PRELOADER', payload: bool});
 
     return (
         <>
@@ -124,8 +111,6 @@ function TreeRenderer() {
             <styled.Main>
                 <RecursiveMenu treeData={treeData}/>
             </styled.Main>
-
-
         </>
     )
 }
