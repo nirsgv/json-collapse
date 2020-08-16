@@ -6,7 +6,8 @@ import reducer from './reducer';
 const getInitialState = () => ({
     urlTextInput: '',
     treeData: {},
-    isPreloader: false
+    isPreloader: false,
+    error: false
 });
 
 const DUMMY_URLS = {
@@ -61,22 +62,26 @@ function RecursiveMenu({treeData}) {
     )
 }
 
-function JsonRetriever({urlText, setTreeData, setPreloader, isPreloader}) {
+function JsonRetriever({ urlText, setTreeData, setPreloader, isPreloader, error, setError }) {
 
-    const fetchdata = async (url) => {
+    const fetchData = async (url) => {
         if (!url) return;
         setPreloader(true);
         await fetch(url)
             .then(response => response.json())
             .then(data => {
-                setTreeData(data)
+                if (error) {setError(false)}
+                return setTreeData(data)
+            })
+            .catch(e => {
+                setError(true);
             });
         setPreloader(false);
     }
 
     return (
         <div>
-            <button type='button' onClick={() => fetchdata(urlText)}>{!isPreloader ? 'Get Data!' : 'Spin!'}</button>
+            <button type='button' onClick={() => fetchData(urlText)}>{!isPreloader ? 'Get Data!' : 'Spin!'}</button>
         </div>
     )
 }
@@ -84,12 +89,13 @@ function JsonRetriever({urlText, setTreeData, setPreloader, isPreloader}) {
 function TreeRenderer() {
 
     const [ state, dispatch ] = useReducer(reducer, getInitialState());
-    const { urlTextInput, isPreloader, treeData } = state;
+    const { urlTextInput, isPreloader, treeData, error } = state;
 
     const setUrlTextInput = (e) => dispatch({type: 'SET_URL_TEXT_INPUT', payload: e.target.value});
     const setDummyUrlTextInput = (url) => dispatch({type: 'SET_URL_TEXT_INPUT', payload: url});
     const setTreeData = (treeDate) => dispatch({type: 'SET_TREE_DATA', payload: treeDate});
     const setPreloader = (bool) => dispatch({type: 'SET_PRELOADER', payload: bool});
+    const setError = (bool) => dispatch({type: 'SET_ERROR', payload: bool});
 
     return (
         <>
@@ -106,10 +112,15 @@ function TreeRenderer() {
                 </styled.Dl>
             </styled.DummyUrlsWrap>
             <styled.ButtonWrap>
-                <JsonRetriever urlText={urlTextInput} setTreeData={setTreeData} setPreloader={setPreloader} isPreloader={isPreloader}/>
+                <JsonRetriever urlText={urlTextInput} setTreeData={setTreeData} setPreloader={setPreloader}
+                               isPreloader={isPreloader} error={error} setError={setError}/>
             </styled.ButtonWrap>
             <styled.Main>
-                <RecursiveMenu treeData={treeData}/>
+                {
+                    !error
+                    ? <RecursiveMenu treeData={treeData}/>
+                    : <h2>Please try a valid endpoint.</h2>
+                }
             </styled.Main>
         </>
     )
