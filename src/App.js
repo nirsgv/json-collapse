@@ -4,8 +4,6 @@ import reducer from './reducer';
 
 
 const getInitialState = () => ({
-    // urlTextInput: 'https://pokeapi.co/api/v2/pokemon/ditto',
-    // urlTextInput: 'https://dog.ceo/api/breeds/list/all',
     urlTextInput: '',
     treeData: {},
     isPreloader: false
@@ -20,7 +18,9 @@ function List({children}) {
     }
     return (
         <>
-            {children.length > 0 && <button type='button' className='toggle' onClick={toggleMenu}>{menuOpened ? '-' : '+'}</button>}
+            {children.length > 0 && <button type='button' onClick={toggleMenu}>
+                {menuOpened ? '-' : '+'}
+            </button>}
             <ul style={{display: menuOpened ? 'block' : 'none'}}>
                 {children}
             </ul>
@@ -68,7 +68,6 @@ function JsonRetriever({urlText, setTreeData, setPreloader, isPreloader}) {
                 setTreeData(data)
             });
         setPreloader(false);
-
     }
 
     return (
