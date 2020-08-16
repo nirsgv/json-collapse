@@ -1,4 +1,4 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Please try the [Deployed App](https://peaceful-bastion-86249.herokuapp.com/).
 
 ## Available Scripts
 
